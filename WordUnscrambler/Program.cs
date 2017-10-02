@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WordUnscrambler.Constructors;
+using WordUnscrambler.Data;
 
 namespace WordUnscrambler
 {
     class Program
     {
+        private static readonly FileReader fileReader = new FileReader();
+        private static readonly WordMatcher wordMatcher = new WordMatcher();
+        private const string wordListFile = "wordList.txt";
         static void Main(string[] args)
         {
             bool loopCondition = true;
@@ -47,12 +52,36 @@ namespace WordUnscrambler
 
         private static void MethodToProcessWords()
         {
-            throw new NotImplementedException();
+            var manualInput = Console.ReadLine() ?? string.Empty;
+            string[] scrambledWords = manualInput.Split(',');
+            DisplayMatchedScrambledWords(scrambledWords);
         }
 
         private static void MethodToProcessFile()
         {
-            throw new NotImplementedException();
+            var fileInput = Console.ReadLine() ?? string.Empty;
+            string[] scrambleWordsFile = fileReader.Read(fileInput);
+            DisplayMatchedScrambledWords(scrambleWordsFile);
         }
+
+        private static void DisplayMatchedScrambledWords(string[] scrambledWords)
+        {
+            string[] wordlist = fileReader.Read(wordListFile);
+
+            List<MatchedWord> matchedWords = wordMatcher.Match(scrambledWords, wordlist);
+
+            if (matchedWords.Any())
+            {
+                foreach (var match in matchedWords)
+                {
+                    Console.WriteLine($"\n Match found {match.ScrambledWords}: {match.Word}\n");
+                }
+            }
+            else
+            {
+                Console.WriteLine("\n No matches have been found.\n");
+            }
+        }
+
     }
 }
